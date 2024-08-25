@@ -4,11 +4,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Crates.io](https://img.shields.io/crates/v/rustdns.svg)](https://crates.io/crates/rustdns)
 [![Docs.rs](https://docs.rs/rustdns/badge.svg)](https://docs.rs/rustdns)
-[![GitHub issues](https://img.shields.io/github/issues/dinxsh/rustdns)](https://github.com/dinxsh/rustdns/issues)
-[![GitHub stars](https://img.shields.io/github/stars/dinxsh/rustdns)](https://github.com/dinxsh/rustdns/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/dinxsh/rustdns)](https://github.com/dinxsh/rustdns/network)
+[![GitHub issues](https://img.shields.io/github/issues/dinxsh/rdns)](https://github.com/dinxsh/rdns/issues)
+[![GitHub stars](https://img.shields.io/github/stars/dinxsh/rdns)](https://github.com/dinxsh/rdns/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/dinxsh/rdns)](https://github.com/dinxsh/rdns/network)
 
-RustDNS is an open-source, lightweight, high-performance DNS server implementation in Rust. It provides a simple yet powerful solution for handling DNS queries and managing DNS records.
+RustDNS [WIP] is an open-source, lightweight, high-performance DNS server implementation in Rust. It provides a simple yet powerful solution for handling DNS queries and managing DNS records.
 
 ## Features
 
