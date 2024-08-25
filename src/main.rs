@@ -4,6 +4,8 @@ use std::io::{self, ErrorKind};
 use std::sync::{Arc, RwLock};
 use std::thread;
 use std::time::{Duration, Instant};
+use clap::{App, Arg, SubCommand};
+use std::fmt;
 
 const MAX_PACKET_SIZE: usize = 512;
 const CACHE_TTL: Duration = Duration::from_secs(300); // 5 minutes
@@ -19,9 +21,19 @@ struct DnsQuery {
 enum DnsRecordType {
     A(String),    // IPv4
     AAAA(String), // IPv6
-    CNAME(String),
     MX(u16, String),
     TXT(String),
+}
+
+impl fmt::Display for DnsRecordType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DnsRecordType::A(_) => write!(f, "A"),
+            DnsRecordType::AAAA(_) => write!(f, "AAAA"),
+            DnsRecordType::MX(_, _) => write!(f, "MX"),
+            DnsRecordType::TXT(_) => write!(f, "TXT"),
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -102,7 +114,6 @@ impl DnsServer {
             (&record.record_type, query_type),
             (DnsRecordType::A(_), 1) |
             (DnsRecordType::AAAA(_), 28) |
-            (DnsRecordType::CNAME(_), 5) |
             (DnsRecordType::MX(_, _), 15) |
             (DnsRecordType::TXT(_), 16)
         )
@@ -169,7 +180,6 @@ fn append_answer_section(response: &mut Vec<u8>, records: &[DnsRecord]) {
         let (record_type, rdata) = match &record.record_type {
             DnsRecordType::A(ip) => (1u16, ip.split('.').map(|octet| octet.parse::<u8>().unwrap_or(0)).collect::<Vec<u8>>()),
             DnsRecordType::AAAA(ip) => (28u16, ip.parse::<IpAddr>().unwrap().to_string().into_bytes()),
-            DnsRecordType::CNAME(name) => (5u16, name.as_bytes().to_vec()),
             DnsRecordType::MX(pref, name) => {
                 let mut data = pref.to_be_bytes().to_vec();
                 data.extend_from_slice(name.as_bytes());
@@ -196,24 +206,123 @@ fn create_dns_error_response(query: &DnsQuery) -> Vec<u8> {
 }
 
 fn main() -> io::Result<()> {
-    let server = DnsServer::new("127.0.0.1:5300")?;
-    
-    // Add sample DNS records
-    let sample_records = [
-        ("example.com", DnsRecordType::A("93.184.216.34".to_string())),
-        ("rust-lang.org", DnsRecordType::A("13.35.11.83".to_string())),
-        ("example.com", DnsRecordType::AAAA("2606:2800:220:1:248:1893:25c8:1946".to_string())),
-        ("mail.example.com", DnsRecordType::MX(10, "mailserver.example.com".to_string())),
-        ("example.com", DnsRecordType::TXT("v=spf1 include:_spf.example.com ~all".to_string())),
-    ];
+    let matches = App::new("RustDNS")
+        .version("1.0")
+        .author("Your Name")
+        .about("A simple DNS server implemented in Rust")
+        .subcommand(SubCommand::with_name("run")
+            .about("Run the DNS server")
+            .arg(Arg::with_name("address")
+                  .short('a')
+                .long("address")
+                .value_name("ADDRESS")
+                .help("Sets the address to listen on")
+                .takes_value(true)
+                .default_value("127.0.0.1:5300")))
+        .subcommand(SubCommand::with_name("add")
+            .about("Add a DNS record")
+            .arg(Arg::with_name("domain")
+                .help("The domain name")
+                .required(true)
+                .index(1))
+            .arg(Arg::with_name("type")
+                .help("The record type (A, AAAA, MX, TXT)")
+                .required(true)
+                .index(2))
+            .arg(Arg::with_name("value")
+                .help("The record value")
+                .required(true)
+                .index(3))
+            .arg(Arg::with_name("ttl")
+                .short('t')
+                .long("ttl")
+                .value_name("TTL")
+                .help("Time to live in seconds")
+                .takes_value(true)
+                .default_value("3600")))
+        .get_matches();
 
-    for (domain, record_type) in sample_records.iter() {
-        server.add_record(domain, DnsRecord {
-            record_type: record_type.clone(),
-            ttl: 3600,
-            last_updated: Instant::now(),
-        });
+    match matches.subcommand() {
+        Some(("run", run_matches)) => {
+            let address = run_matches.value_of("address").unwrap();
+            let server = DnsServer::new(address)?;
+            
+            // Add sample DNS records
+            let sample_records = [
+                ("example.com", DnsRecordType::A("93.184.216.34".to_string())),
+                ("rust-lang.org", DnsRecordType::A("13.35.11.83".to_string())),
+                ("example.com", DnsRecordType::AAAA("2606:2800:220:1:248:1893:25c8:1946".to_string())),
+                ("mail.example.com", DnsRecordType::MX(10, "mailserver.example.com".to_string())),
+                ("example.com", DnsRecordType::TXT("v=spf1 include:_spf.example.com ~all".to_string())),
+            ];
+
+            for (domain, record_type) in sample_records.iter() {
+                server.add_record(domain, DnsRecord {
+                    record_type: record_type.clone(),
+                    ttl: 3600,
+                    last_updated: Instant::now(),
+                });
+            }
+            
+            server.run()
+        },
+        Some(("add", add_matches)) => {
+            let domain = add_matches.value_of("domain").unwrap();
+            let record_type = add_matches.value_of("type").unwrap();
+            let value = add_matches.value_of("value").unwrap();
+            let ttl = add_matches.value_of("ttl").unwrap().parse().unwrap_or(3600);
+
+            let record_type = match record_type.to_uppercase().as_str() {
+                "A" => DnsRecordType::A(value.to_string()),
+                "AAAA" => DnsRecordType::AAAA(value.to_string()),
+                "MX" => {
+                    let parts: Vec<&str> = value.split_whitespace().collect();
+                    if parts.len() != 2 {
+                        return Err(io::Error::new(ErrorKind::InvalidInput, "MX record should have preference and exchange"));
+                    }
+                    let preference = parts[0].parse().map_err(|_| io::Error::new(ErrorKind::InvalidInput, "Invalid MX preference"))?;
+                    DnsRecordType::MX(preference, parts[1].to_string())
+                },
+                "TXT" => DnsRecordType::TXT(value.to_string()),
+                _ => return Err(io::Error::new(ErrorKind::InvalidInput, "Unsupported record type")),
+            };
+
+            println!("Added record: {} {} {} (TTL: {})", domain, record_type, value, ttl);
+            Ok(())
+        },
+        _ => {
+            // Default behavior: run the DNS server with default settings
+            let address = "127.0.0.1:5300";
+            let server = DnsServer::new(address)?;
+            
+            // Add sample DNS records
+            let sample_records = [
+                ("example.com", DnsRecordType::A("93.184.216.34".to_string())),
+                ("rust-lang.org", DnsRecordType::A("13.35.11.83".to_string())),
+                ("example.com", DnsRecordType::AAAA("2606:2800:220:1:248:1893:25c8:1946".to_string())),
+                ("mail.example.com", DnsRecordType::MX(10, "mailserver.example.com".to_string())),
+                ("example.com", DnsRecordType::TXT("v=spf1 include:_spf.example.com ~all".to_string())),
+            ];
+
+            for (domain, record_type) in sample_records.iter() {
+                server.add_record(domain, DnsRecord {
+                    record_type: record_type.clone(),
+                    ttl: 3600,
+                    last_updated: Instant::now(),
+                });
+            }
+            
+            println!("No command specified. Running DNS server with default settings...");
+            server.run()
+        },
     }
-    
-    server.run()
 }
+
+// To run this DNS server:
+// 1. Make sure you have Rust installed on your system.
+// 2. Save this code in a file named `main.rs` in your project directory.
+// 3. Open a terminal and navigate to the project directory.
+// 4. Run the following command to build and run the server:
+//    cargo run
+// 5. The server will start and listen on 127.0.0.1:5300.
+// 6. You can test it using the dig command. Here are some examples with common options:
