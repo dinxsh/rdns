@@ -1,55 +1,57 @@
-# Simple DNS Server in Rust
+# RustDNS
 
 [![Rust](https://img.shields.io/badge/rust-%23000000.svg?style=for-the-badge&logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://img.shields.io/github/workflow/status/dinxsh/rustdns/CI)](https://github.com/dinxsh/rustdns/actions)
+[![Crates.io](https://img.shields.io/crates/v/rustdns.svg)](https://crates.io/crates/rustdns)
+[![Docs.rs](https://docs.rs/rustdns/badge.svg)](https://docs.rs/rustdns)
 
-A basic DNS server implementation in Rust. This project demonstrates how to create a simple DNS server that can handle queries and respond with IPv4 addresses.
+RustDNS is a lightweight, high-performance DNS server implementation in Rust. It provides a simple yet powerful solution for handling DNS queries and managing DNS records.
 
 ## Features
 
-- DNS query parsing and handling
-- IPv4 address resolution for configured domains
-- Multithreaded request handling for improved performance
-- Error responses for non-existent domains
-- Easy-to-use API for adding DNS records
+- Fast and efficient DNS query parsing and handling
+- Support for IPv4 and IPv6 address resolution
+- Multithreaded architecture for optimal performance
+- Configurable caching mechanism
+- Extensible plugin system for custom record types
+- Comprehensive logging and monitoring
+- Easy-to-use API for programmatic DNS record management
 
 ## Prerequisites
 
-- Rust programming language (https://www.rust-lang.org/tools/install)
+- Rust 1.56.0 or later
 
-## Installation
+## Quick Start
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/dns_server.git
-   cd dns_server
-   ```
-
-2. Build the project:
-   ```
-   cargo build --release
+1. Add RustDNS to your `Cargo.toml`:
+   ```toml
+   [dependencies]
+   rustdns = "0.1.0"
    ```
 
-## Usage
+2. Use RustDNS in your project:
+   ```rust
+   use rustdns::{DnsServer, Config};
 
-1. Run the DNS server:
+   fn main() {
+       let config = Config::new()
+           .bind_address("127.0.0.1:5300")
+           .add_record("example.com", "93.184.216.34");
+
+       let server = DnsServer::new(config);
+       server.run().expect("Failed to start DNS server");
+   }
    ```
-   cargo run --release
-   ```
 
-   The server will start and listen on `127.0.0.1:5300`.
+## Documentation
 
-2. Test the server using `nslookup`:
-   ```
-   nslookup -port=5300 example.com 127.0.0.1
-   ```
+For detailed documentation, please visit [docs.rs/rustdns](https://docs.rs/rustdns).
 
-   You should receive a response with the IP address `93.184.216.34` for `example.com`.
+## Contributing
 
-## Configuration
+We welcome contributions to RustDNS! Please see our [Contributing Guide](CONTRIBUTING.md) for more details.
 
-The DNS server is pre-configured with one record:
-- Domain: `example.com`
-- IP: `93.184.216.34`
+## License
 
-To add more records, modify the `main()` function in `src/main.rs`:
+RustDNS is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
