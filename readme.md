@@ -2,7 +2,6 @@
 
 [![Rust](https://img.shields.io/badge/rust-%23000000.svg?style=for-the-badge&logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Crates.io](https://img.shields.io/crates/v/rustdns.svg)](https://crates.io/crates/rustdns)
 [![Docs.rs](https://docs.rs/rustdns/badge.svg)](https://docs.rs/rustdns)
 [![GitHub issues](https://img.shields.io/github/issues/dinxsh/rdns)](https://github.com/dinxsh/rdns/issues)
 [![GitHub stars](https://img.shields.io/github/stars/dinxsh/rdns)](https://github.com/dinxsh/rdns/stargazers)
