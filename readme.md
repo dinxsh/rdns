@@ -23,7 +23,7 @@ Or add it manually to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rust-dns = "0.1.0"
+rust-dns = "0.1.1"
 ```
 
 ## Features

@@ -1,6 +1,6 @@
 [package]
 name = "rust-dns"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Dinesh Talwadker"]
 description = "A lightweight, high-performance DNS server implementation in Rust"
