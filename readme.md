@@ -49,7 +49,7 @@ RustDNS [WIP] is an open-source, lightweight, high-performance DNS server implem
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/rustdns.git
+   git clone https://github.com/dinxsh/rdns.git
    cd rustdns
    ```
 
