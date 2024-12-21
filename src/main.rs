@@ -208,7 +208,7 @@ fn create_dns_error_response(query: &DnsQuery) -> Vec<u8> {
 fn main() -> io::Result<()> {
     let matches = App::new("RustDNS")
         .version("1.0")
-        .author("Your Name")
+        .author("Dinesh Talwadker")
         .about("A simple DNS server implemented in Rust")
         .subcommand(SubCommand::with_name("run")
             .about("Run the DNS server")

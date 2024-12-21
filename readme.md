@@ -2,12 +2,29 @@
 
 [![Rust](https://img.shields.io/badge/rust-%23000000.svg?style=for-the-badge&logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Docs.rs](https://docs.rs/rustdns/badge.svg)](https://docs.rs/rustdns)
+[![Docs.rs](https://docs.rs/rust-dns/badge.svg)](https://docs.rs/rust-dns)
 [![GitHub issues](https://img.shields.io/github/issues/dinxsh/rdns)](https://github.com/dinxsh/rdns/issues)
 [![GitHub stars](https://img.shields.io/github/stars/dinxsh/rdns)](https://github.com/dinxsh/rdns/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/dinxsh/rdns)](https://github.com/dinxsh/rdns/network)
+[![Crates.io](https://img.shields.io/crates/v/rust-dns)](https://crates.io/crates/rust-dns)
+[![Downloads](https://img.shields.io/crates/d/rust-dns)](https://crates.io/crates/rust-dns)
 
 RustDNS [WIP] is an open-source, lightweight, high-performance DNS server implementation in Rust. It provides a simple yet powerful solution for handling DNS queries and managing DNS records.
+
+## Installation
+
+Add rust-dns to your project using cargo:
+
+```bash
+cargo add rust-dns
+```
+
+Or add it manually to your `Cargo.toml`:
+
+```toml
+[dependencies]
+rust-dns = "0.1.0"
+```
 
 ## Features
 
@@ -25,47 +42,48 @@ RustDNS [WIP] is an open-source, lightweight, high-performance DNS server implem
 
 ## Quick Start
 
-1. Add RustDNS to your `Cargo.toml`:
-   ```toml
-   [dependencies]
-   rustdns = "0.1.0"
-   ```
+```rust
+use rust_dns::{DnsServer, DnsRecord};
+fn main() -> std::io::Result<()> {
+    // Create a new DNS server instance
+    let server = DnsServer::new("127.0.0.1:5300")?;
+    // Run the server
+    server.run()
+}
+```
 
-2. Use RustDNS in your project:
-   ```rust
-   use rustdns::{DnsServer, Config};
+## CLI Usage
 
-   fn main() {
-       let config = Config::new()
-           .bind_address("127.0.0.1:5300")
-           .add_record("example.com", "93.184.216.34");
+Run the DNS server:
 
-       let server = DnsServer::new(config);
-       server.run().expect("Failed to start DNS server");
-   }
-   ```
+```bash
+rust-dns run --address 127.0.0.1:5300
+```
+
+Add a DNS record:
+
+```bash
+rust-dns add example.com A 93.184.216.34 --ttl 3600
+```
 
 ## Building from Source
 
 1. Clone the repository:
-   ```
-   git clone https://github.com/dinxsh/rdns.git
-   cd rustdns
-   ```
+
+```bash
+git clone https://github.com/dinxsh/rdns.git
+cd rdns
+```
 
 2. Build the project:
-   ```
-   cargo build --release
-   ```
 
-3. Run the DNS server:
-   ```
-   cargo run --release
-   ```
+```bash
+cargo build --release
+```
 
 ## Documentation
 
-For detailed documentation, please visit [docs.rs/rustdns](https://docs.rs/rustdns).
+For detailed documentation, please visit [docs.rs/rust-dns](https://docs.rs/rust-dns).
 
 ## Contributing
 
