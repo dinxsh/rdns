@@ -1,8 +1,6 @@
 # RustDNS
 
 [![Rust](https://img.shields.io/badge/rust-%23000000.svg?style=for-the-badge&logo=rust&logoColor=white)](https://www.rust-lang.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Docs.rs](https://docs.rs/rust-dns/badge.svg)](https://docs.rs/rust-dns)
 [![GitHub issues](https://img.shields.io/github/issues/dinxsh/rdns)](https://github.com/dinxsh/rdns/issues)
 [![GitHub stars](https://img.shields.io/github/stars/dinxsh/rdns)](https://github.com/dinxsh/rdns/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/dinxsh/rdns)](https://github.com/dinxsh/rdns/network)
